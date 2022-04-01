@@ -19,7 +19,6 @@ contract TheRanchBullsMint is ERC721Enumerable, IERC2981, Ownable {
     
     AggregatorV3Interface internal maticUsdPriceFeed;
     uint256 public constant BULLS_SALE_TOTAL = 4999;
-    uint256 public constant WHITELIST_TOTAL = 30;
     uint256 public BULLS_MAX_MINTS_TOTAL_PER_WALLET = 100;
     uint[] allowedTokenQuantity = [1,2,3,5,7,11];   // Allowed amount to mint in the contract
     
@@ -34,9 +33,14 @@ contract TheRanchBullsMint is ERC721Enumerable, IERC2981, Ownable {
     bool public publicSaleLive = false;
     bool public paused = true;
    
-    address public royalties; 
+    address public royalties;
+    address public dev1;
+    address public dev2;
 
     constructor(
+        address royalties,
+        address dev1,
+        address dev2,
         address _priceFeedAddress,
         string memory _initBaseURI
     ) public
@@ -45,16 +49,26 @@ contract TheRanchBullsMint is ERC721Enumerable, IERC2981, Ownable {
         maticUsdPriceFeed = AggregatorV3Interface(_priceFeedAddress);
 
         mintingCost[1] = 200;
-        mintingCost[2] = 190;
-        mintingCost[3] = 180;
-        mintingCost[5] = 170;
-        mintingCost[7] = 160;
-        mintingCost[11] = 150;
+        mintingCost[2] = 180;
+        mintingCost[3] = 170;
+        mintingCost[5] = 160;
+        mintingCost[7] = 150;
+        mintingCost[11] = 140;
+
+        require(address(dev1) != address(0));
+        require(address(dev2) != address(0));
+        require(address(royalties) != address(0));
         
-        for(uint256 i = 0; i < WHITELIST_TOTAL; i++) {
+        for(uint256 i = 0; i < 50; i++) {
                 _tokenSupply.increment();
-                _safeMint(msg.sender, _tokenSupply.current());
+                _safeMint(dev1, _tokenSupply.current());
         }
+
+        for(uint256 i = 0; i < 25; i++) {
+                _tokenSupply.increment();
+                _safeMint(dev2, _tokenSupply.current());
+        }
+
     }
 
     
