@@ -10,14 +10,8 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "./TheRanchBullsMint.sol";
 
 contract TheRanchBullsAirDrop is Ownable {
-
     using SafeERC20 for IERC20;
-    
     address public TheRanchBullsMintAddress;
-    address public dev1;
-    address public dev2;
-    uint256 public dev1_percent = 14;
-    uint256 public dev2_percent = 6;
     address public rewardTokenContract;
     uint public rewardDecimals = 6;
     uint256 public eligibleRewardAmount = 0;
@@ -57,16 +51,8 @@ contract TheRanchBullsAirDrop is Ownable {
         require(eligibleRewardAmount > 0, "Not Enough Funds to Warrant calling the function to award the Bulls");
 
         IERC20 tokenContract = IERC20(rewardTokenContract);
-
-        uint256 _balance = eligibleRewardAmount;
-        tokenContract.safeTransfer(dev1, _balance * dev1_percent / 100);
-        tokenContract.safeTransfer(dev2, _balance * dev2_percent / 100);
-
-        _balance = _balance - ((_balance * dev1_percent / 100) + (_balance * dev2_percent / 100));
-        uint256 payout_cut = _balance / 100;
-
+        uint256 payout_cut = eligibleRewardAmount / 100;
         uint256 _tokenSupply = getMintTotalSupply();
-
         for (uint256 i = 1; i <= _tokenSupply; i++) {
             address BullOwner = getNFTOwnerOf(i);
             if (BullOwner != address(0)){
@@ -92,7 +78,6 @@ contract TheRanchBullsAirDrop is Ownable {
         TheRanchBullsMint TRBM = TheRanchBullsMint(TheRanchBullsMintAddress);
         return TRBM.ownerOf(_index);
     }
-
 
     function getBalance() public view returns (uint256){
         uint256 _balance = address(this).balance;
@@ -154,24 +139,6 @@ contract TheRanchBullsAirDrop is Ownable {
     function updateEligibleRewardAmount(uint256 _amount) external  onlyOwner {
         uint256 amount = _amount * 10 ** rewardDecimals;
         eligibleRewardAmount = amount;
-    }
-
-    function setdev1(address payable _address) external  onlyOwner {
-        dev1 = _address;
-    }
-
-    function setdev2(address payable _address) external onlyOwner {
-        dev2 = _address;
-    }
-
-    function set_Dev1_percent(uint256 _percent) external onlyOwner {
-        require(_percent + dev2_percent <= 20, "dev1_% + dev2_% must be <=20");
-        dev1_percent  = _percent;
-    }
-
-    function set_Dev2_percent(uint256 _percent) external onlyOwner {
-        require(_percent + dev1_percent <= 20, "dev1_% + dev2_% must be <=20");
-        dev2_percent  = _percent;
     }
 
     function setRewardTokenAddress(address _address) public onlyOwner {
