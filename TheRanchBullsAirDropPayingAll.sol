@@ -50,7 +50,6 @@ contract TheRanchBullsAirDrop is Ownable {
         require(address(rewardTokenContract) != address(0), "ERROR: Must set the Reward Token Contract address before rewarding");
         require(eligibleRewardAmount > 0, "Not Enough Funds to Warrant calling the function to award the Bulls");
 
-        IERC20 tokenContract = IERC20(rewardTokenContract);
         uint256 payout_cut = eligibleRewardAmount / 100;
         uint256 _tokenSupply = getMintTotalSupply();
         for (uint256 i = 1; i <= _tokenSupply; i++) {
